@@ -9,3 +9,5 @@ docker compose start
 
 docker compose down
 
+
+git remote add origin https://github.com/cluna1975/docker-lamp-server.git

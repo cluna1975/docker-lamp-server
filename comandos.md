@@ -25,7 +25,9 @@ git push origin main
 git config pull.rebase false
 git pull origin main
 
+git stash
 
+git stash pop
 
 git remote add origin https://github.com/cluna1975/docker-lamp-server.git
 

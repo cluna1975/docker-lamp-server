@@ -5,7 +5,7 @@ require_once 'config.php';
 $conn = conectar_db();
 $mensaje_info = null;
 $usuario = null;
-$id = $_GET['id'] ?? null;
+$id = $_POST['id'] ?? $_GET['id'] ?? null;
 
 // Redirigir si no hay ID
 if (!$id) {
@@ -31,54 +31,61 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['a
         // Si hay errores, se mostrarán en la misma página de edición
         $mensaje_info = ['tipo' => 'error', 'texto' => implode('<br>', $errors)];
     } else {
-        // Prepara la consulta para actualizar
-        $stmt = $conn->prepare("UPDATE usuarios SET nombre = ?, email = ? WHERE id = ?");
-        $stmt->bind_param("ssi", $nombre, $email, $id);
+        try {
+            $estado = (isset($_POST['estado']) && $_POST['estado'] == '1') ? 1 : 0;
+            $stmt = $conn->prepare("UPDATE usuarios SET nombre = ?, email = ?, estado = ? WHERE id = ?");
+            $stmt->bind_param("ssii", $nombre, $email, $estado, $id);
 
-        if ($stmt->execute()) {
-            $_SESSION['mensaje'] = ['tipo' => 'success', 'texto' => "✅ ¡Usuario actualizado con éxito!"];
-            header("Location: index.php"); // Redirigir al índice
-            exit();
-        } else {
-            if ($conn->errno == 1062) { // Error de email duplicado
-                $mensaje_info = ['tipo' => 'error', 'texto' => "❌ El email '$email' ya está en uso por otro usuario."];
+            if ($stmt->execute()) {
+                $_SESSION['mensaje'] = ['tipo' => 'success', 'texto' => "✅ ¡Usuario actualizado con éxito!"];
+                header("Location: index.php");
+                exit();
             } else {
-                $mensaje_info = ['tipo' => 'error', 'texto' => "❌ Error del servidor: " . $stmt->error];
+                if ($conn->errno == 1062) {
+                    $mensaje_info = ['tipo' => 'error', 'texto' => "❌ El email '$email' ya está en uso por otro usuario."];
+                } else {
+                    $mensaje_info = ['tipo' => 'error', 'texto' => "❌ Error del servidor: " . $stmt->error];
+                }
             }
+            $stmt->close();
+        } catch (mysqli_sql_exception $e) {
+            $error_code = $e->getCode();
+            error_log("Error MySQL en editar.php [{$error_code}]: " . $e->getMessage());
+            header("Location: error_db.php?error={$error_code}");
+            exit;
         }
-        $stmt->close();
     }
 }
 
 // --- LÓGICA PARA OBTENER DATOS DEL USUARIO (PARA EL FORMULARIO) ---
 if ($id) {
-    $stmt = $conn->prepare("SELECT id, nombre, email FROM usuarios WHERE id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $resultado = $stmt->get_result();
-    if ($resultado->num_rows === 1) {
-        $usuario = $resultado->fetch_assoc();
-    } else {
-        $_SESSION['mensaje'] = ['tipo' => 'error', 'texto' => '❌ Usuario no encontrado.'];
-        header("Location: index.php");
-        exit();
+    try {
+        $stmt = $conn->prepare("SELECT id, nombre, email, COALESCE(estado, 1) as estado FROM usuarios WHERE id = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $resultado = $stmt->get_result();
+        if ($resultado->num_rows === 1) {
+            $usuario = $resultado->fetch_assoc();
+        } else {
+            $_SESSION['mensaje'] = ['tipo' => 'error', 'texto' => '❌ Usuario no encontrado.'];
+            header("Location: index.php");
+            exit();
+        }
+        $stmt->close();
+    } catch (mysqli_sql_exception $e) {
+        $error_code = $e->getCode();
+        error_log("Error MySQL en editar.php SELECT [{$error_code}]: " . $e->getMessage());
+        header("Location: error_db.php?error={$error_code}");
+        exit;
     }
-    $stmt->close();
 }
 
 $conn->close();
 
 ?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Usuario</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<?php $page_title = 'Editar Usuario'; include 'header.php'; ?>
     <style>
-        /* --- ESTILOS (copiados de index.php para consistencia) --- */
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .content { display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 100px); }
         .container { background: white; padding: 30px 40px; border-radius: 10px; width: 100%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin: 20px auto; }
         h2 { margin-bottom: 25px; color: #333; text-align: center; }
         .form-control { margin-bottom: 20px; text-align: left; }
@@ -94,6 +101,13 @@ $conn->close();
         .msg { padding: 15px; margin-bottom: 20px; border-radius: 5px; text-align: center; font-weight: bold; }
         .msg-error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
         a.btn-cancelar { display: block; text-align: center; margin-top: 15px; color: #6c757d; text-decoration: none; }
+        .switch { position: relative; display: inline-block; width: 60px; height: 34px; margin-right: 10px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #28a745; }
+        input:checked + .slider:before { transform: translateX(26px); }
+        .estado-text { vertical-align: middle; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -106,7 +120,7 @@ $conn->close();
     <?php endif; ?>
 
     <?php if ($usuario): ?>
-    <form id="editarForm" method="POST" action="editar.php?id=<?php echo htmlspecialchars($id); ?>">
+    <form id="editarForm" method="POST" action="editar.php">
         <input type="hidden" name="action" value="actualizar">
         <input type="hidden" name="id" value="<?php echo htmlspecialchars($usuario['id']); ?>">
 
@@ -126,11 +140,26 @@ $conn->close();
             </div>
         </div>
         
+        <div class="form-control">
+            <label for="estado">Estado:</label>
+            <input type="hidden" name="estado" value="0">
+            <label class="switch">
+                <input type="checkbox" id="estado" name="estado" value="1" <?php echo $usuario['estado'] == 1 ? 'checked' : ''; ?>>
+                <span class="slider"></span>
+            </label>
+            <span class="estado-text"><?php echo $usuario['estado'] == 1 ? 'Activo' : 'Inactivo'; ?></span>
+        </div>
+        
         <button type="submit" id="submitBtn"><i class="fa-solid fa-save"></i> Guardar Cambios</button>
         <a href="index.php" class="btn-cancelar">Cancelar</a>
     </form>
     <?php endif; ?>
 </div>
 
-</body>
-</html>
+<script>
+document.getElementById('estado').addEventListener('change', function() {
+    const estadoText = document.querySelector('.estado-text');
+    estadoText.textContent = this.checked ? 'Activo' : 'Inactivo';
+});
+</script>
+<?php include 'footer.php'; ?>

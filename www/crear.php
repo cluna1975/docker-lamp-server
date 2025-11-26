@@ -21,23 +21,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!empty($errors)) {
         $mensaje_info = ['tipo' => 'error', 'texto' => implode('<br>', $errors)];
     } else {
-        $stmt = $conn->prepare("INSERT INTO usuarios (nombre, email) VALUES (?, ?)");
-        $stmt->bind_param("ss", $nombre, $email);
+        try {
+            $stmt = $conn->prepare("INSERT INTO usuarios (nombre, email) VALUES (?, ?)");
+            $stmt->bind_param("ss", $nombre, $email);
 
-        if ($stmt->execute()) {
-            $_SESSION['mensaje'] = ['tipo' => 'success', 'texto' => "✅ ¡Usuario $nombre registrado con éxito!"];
-            header("Location: index.php"); // Redirigir a la lista
-            exit();
-        } else {
-            if ($conn->errno == 1062) {
-                $mensaje_info = ['tipo' => 'error', 'texto' => "❌ El email '$email' ya está registrado."];
+            if ($stmt->execute()) {
+                $_SESSION['mensaje'] = ['tipo' => 'success', 'texto' => "✅ ¡Usuario $nombre registrado con éxito!"];
+                header("Location: index.php");
+                exit();
             } else {
-                $mensaje_info = ['tipo' => 'error', 'texto' => "❌ Error del servidor: " . $stmt->error];
+                if ($conn->errno == 1062) {
+                    $mensaje_info = ['tipo' => 'error', 'texto' => "❌ El email '$email' ya está registrado."];
+                } else {
+                    $mensaje_info = ['tipo' => 'error', 'texto' => "❌ Error del servidor: " . $stmt->error];
+                }
             }
+            $stmt->close();
+            $conn->close();
+        } catch (mysqli_sql_exception $e) {
+            $error_code = $e->getCode();
+            error_log("Error MySQL en crear.php [{$error_code}]: " . $e->getMessage());
+            header("Location: error_db.php?error={$error_code}");
+            exit;
         }
-        $stmt->close();
     }
-    $conn->close();
 }
 
 // Mensaje de la sesión (por si hay una redirección con error)
@@ -46,15 +53,9 @@ if (isset($_SESSION['mensaje'])) {
     unset($_SESSION['mensaje']);
 }
 ?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Crear Usuario</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<?php $page_title = 'Crear Usuario'; include 'header.php'; ?>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .content { display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 100px); }
         .container { background: white; padding: 30px 40px; border-radius: 10px; width: 100%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin: 20px auto; }
         h2 { margin-bottom: 25px; color: #333; text-align: center; }
         .form-control { margin-bottom: 20px; text-align: left; }
@@ -106,6 +107,8 @@ if (isset($_SESSION['mensaje'])) {
         <a href="index.php" class="btn-cancelar">Volver a la lista</a>
     </form>
 </div>
+
+<?php include 'footer.php'; ?>
 
 <script>
 // --- SCRIPT DE VALIDACIÓN DEL FORMULARIO ---
@@ -160,6 +163,3 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-
-</body>
-</html>

@@ -1,6 +1,12 @@
 cd ~/proyecto-lamp
 docker compose up -d
 
+Luego, entra a tu navegador:
+
+Web: http://localhost:8080
+
+Base de Datos: http://localhost:8081
+
 
 docker compose stop
 docker compose start

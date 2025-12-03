@@ -1,12 +1,21 @@
 FROM php:8.2-apache
-# Instalamos las extensiones necesarias para conectar con MySQL
-RUN docker-php-ext-install mysqli pdo pdo_mysql && docker-php-ext-enable mysqli
+# Instalamos las extensiones necesarias para conectar con MySQL y otras utilidades
+RUN apt-get update && apt-get install -y \
+    zip \
+    unzip \
+    git \
+    && docker-php-ext-install mysqli pdo pdo_mysql \
+    && docker-php-ext-enable mysqli
 
 # Activamos mod_rewrite para URLs amigables
 RUN a2enmod rewrite
+
+# Instalamos Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Copiamos el archivo de configuración de Apache
 COPY 000-default.conf /etc/apache2/sites-available/000-default.conf
 
 # Copiamos los archivos PHP
 COPY www/ /var/www/html/
+RUN chown -R www-data:www-data /var/www/html/

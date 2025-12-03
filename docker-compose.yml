@@ -4,50 +4,58 @@ services:
     build: .
     container_name: mi_servidor_web
     ports:
-      - "8080:80"  # Mapeamos el puerto 8080 de tu Mac al 80 del contenedor
+      - "8080:80"
     volumes:
-      - ./www:/var/www/html # Tu carpeta local se sincroniza con el contenedor
+      - ./www:/var/www/html
     depends_on:
       - db
     networks:
       - lamp-network
+    restart: unless-stopped
+    environment:
+      - DB_HOST=db
+      - DB_USER=${MYSQL_USER}
+      - DB_PASS=${MYSQL_PASSWORD}
+      - DB_NAME=${MYSQL_DATABASE}
 
   # --- BASE DE DATOS (MySQL) ---
   db:
     image: mysql:8.0
     container_name: MySQL
     command: --default-authentication-plugin=mysql_native_password
-    restart: always
+    restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: root # Contraseña maestra
-      MYSQL_DATABASE: mi_proyecto
-      MYSQL_USER: usuario
-      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "3306:3306"
     volumes:
-      - db_data:/var/lib/mysql # Persistencia de datos (para no perderlos al apagar)
+      - db_data:/var/lib/mysql
     networks:
       - lamp-network
-
-  # --- GESTOR VISUAL (phpMyAdmin) - DESACTIVADO ---
+  # --- GESTOR VISUAL (phpMyAdmin) ---
   # phpmyadmin:
   #   image: phpmyadmin/phpmyadmin
   #   container_name: mi_phpmyadmin
   #   environment:
   #     PMA_HOST: db
   #     PMA_USER: root
-  #     PMA_PASSWORD: root
+  #     PMA_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+  #     UPLOAD_LIMIT: 64M
   #   ports:
   #     - "8081:80"
   #   depends_on:
   #     - db
   #   networks:
   #     - lamp-network
+  #   restart: unless-stopped
 
-# Definición de volúmenes y redes
+  # Definición de volúmenes y redes
 volumes:
   db_data:
+
 
 networks:
   lamp-network:

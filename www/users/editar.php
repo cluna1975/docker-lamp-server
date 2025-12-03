@@ -89,31 +89,7 @@ $conn->close();
 
 ?>
 <?php $page_title = 'Editar Usuario'; include '../header.php'; ?>
-    <style>
-        .content { display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 100px); }
-        .container { background: white; padding: 30px 40px; border-radius: 10px; width: 100%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin: 20px auto; }
-        h2 { margin-bottom: 25px; color: #333; text-align: center; }
-        .form-control { margin-bottom: 20px; text-align: left; }
-        .input-group { position: relative; }
-        .input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #aaa; }
-        .input-group input:focus + i { color: #007bff; }
-        label { display: block; margin-bottom: 8px; color: #555; font-weight: bold; }
-        input { width: 100%; padding: 12px 12px 12px 45px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 5px; }
-        input:focus { border-color: #007bff; outline: none; }
-        button { width: 100%; padding: 12px; background: #28a745; color: white; border: none; cursor: pointer; border-radius: 5px; font-size: 16px; font-weight: bold; transition: background-color 0.3s; margin-top: 10px; }
-        button:hover { background: #218838; }
-        button i { margin-right: 8px; }
-        .msg { padding: 15px; margin-bottom: 20px; border-radius: 5px; text-align: center; font-weight: bold; }
-        .msg-error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        a.btn-cancelar { display: block; text-align: center; margin-top: 15px; color: #6c757d; text-decoration: none; }
-        .switch { position: relative; display: inline-block; width: 60px; height: 34px; margin-right: 10px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: #28a745; }
-        input:checked + .slider:before { transform: translateX(26px); }
-        .estado-text { vertical-align: middle; font-weight: bold; }
-    </style>
+
 </head>
 <body>
 

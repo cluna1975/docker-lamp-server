@@ -8,30 +8,41 @@ $mensaje_info = null;
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     $conn = conectar_db();
-    $nombre = trim($_POST['nombre']);
-    $email  = trim($_POST['email']);
+    $first_name = trim($_POST['first_name']);
+    $last_name = trim($_POST['last_name']);
+    $username = trim($_POST['username']);
+    $email = trim($_POST['email']);
+    $password = trim($_POST['password']);
+    $role = $_POST['role'] ?? 'user';
     $errors = [];
 
     // Validaciones
-    if (empty($nombre)) $errors[] = "El nombre es obligatorio.";
-    if (!preg_match("/^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$/", $nombre)) $errors[] = "El nombre solo puede contener letras y espacios.";
+    if (empty($first_name)) $errors[] = "El nombre es obligatorio.";
+    if (!preg_match("/^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$/", $first_name)) $errors[] = "El nombre solo puede contener letras y espacios.";
     if (empty($email)) $errors[] = "El email es obligatorio.";
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = "El formato del email no es válido.";
+    if (empty($password)) $errors[] = "La contraseña es obligatoria.";
+    if (strlen($password) < 6) $errors[] = "La contraseña debe tener al menos 6 caracteres.";
+    if (!empty($username) && !preg_match("/^[a-zA-Z0-9_]+$/", $username)) $errors[] = "El username solo puede contener letras, números y guiones bajos.";
     
     if (!empty($errors)) {
         $mensaje_info = ['tipo' => 'error', 'texto' => implode('<br>', $errors)];
     } else {
         try {
-            $stmt = $conn->prepare("INSERT INTO usuarios (nombre, email) VALUES (?, ?)");
-            $stmt->bind_param("ss", $nombre, $email);
+            $uuid = bin2hex(random_bytes(16));
+            $uuid = substr($uuid, 0, 8) . '-' . substr($uuid, 8, 4) . '-' . substr($uuid, 12, 4) . '-' . substr($uuid, 16, 4) . '-' . substr($uuid, 20, 12);
+            $password_hash = password_hash($password, PASSWORD_DEFAULT);
+            
+            $stmt = $conn->prepare("INSERT INTO users (uuid, email, password_hash, username, first_name, last_name, role) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("sssssss", $uuid, $email, $password_hash, $username, $first_name, $last_name, $role);
 
             if ($stmt->execute()) {
-                $_SESSION['mensaje'] = ['tipo' => 'success', 'texto' => "✅ ¡Usuario $nombre registrado con éxito!"];
+                $_SESSION['mensaje'] = ['tipo' => 'success', 'texto' => "✅ ¡Usuario $first_name registrado con éxito!"];
                 header("Location: index.php");
                 exit();
             } else {
                 if ($conn->errno == 1062) {
-                    $mensaje_info = ['tipo' => 'error', 'texto' => "❌ El email '$email' ya está registrado."];
+                    $mensaje_info = ['tipo' => 'error', 'texto' => "❌ El email o username ya está registrado."];
                 } else {
                     $mensaje_info = ['tipo' => 'error', 'texto' => "❌ Error del servidor: " . $stmt->error];
                 }
@@ -86,12 +97,30 @@ if (isset($_SESSION['mensaje'])) {
 
     <form id="registroForm" method="POST" action="crear.php" novalidate>
         <div class="form-control">
-            <label for="nombre">Nombre:</label>
+            <label for="first_name">Nombre:</label>
             <div class="input-group">
-                <input type="text" id="nombre" name="nombre" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$" placeholder="p. ej., Ada Lovelace">
+                <input type="text" id="first_name" name="first_name" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$" placeholder="p. ej., Ada">
                 <i class="fa-solid fa-user"></i>
             </div>
-            <span class="error-text" id="error-nombre"></span>
+            <span class="error-text" id="error-first_name"></span>
+        </div>
+        
+        <div class="form-control">
+            <label for="last_name">Apellido:</label>
+            <div class="input-group">
+                <input type="text" id="last_name" name="last_name" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$" placeholder="p. ej., Lovelace">
+                <i class="fa-solid fa-user"></i>
+            </div>
+            <span class="error-text" id="error-last_name"></span>
+        </div>
+        
+        <div class="form-control">
+            <label for="username">Username (opcional):</label>
+            <div class="input-group">
+                <input type="text" id="username" name="username" pattern="^[a-zA-Z0-9_]+$" placeholder="p. ej., ada_lovelace">
+                <i class="fa-solid fa-at"></i>
+            </div>
+            <span class="error-text" id="error-username"></span>
         </div>
         
         <div class="form-control">
@@ -103,7 +132,25 @@ if (isset($_SESSION['mensaje'])) {
             <span class="error-text" id="error-email"></span>
         </div>
         
-        <button type="submit" id="submitBtn"><i class="fa-solid fa-paper-plane"></i> Guardar Usuario</button>
+        <div class="form-control">
+            <label for="password">Contraseña:</label>
+            <div class="input-group">
+                <input type="password" id="password" name="password" required minlength="6" placeholder="Mínimo 6 caracteres">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <span class="error-text" id="error-password"></span>
+        </div>
+        
+        <div class="form-control">
+            <label for="role">Rol:</label>
+            <select id="role" name="role" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px;">
+                <option value="user">Usuario</option>
+                <option value="moderator">Moderador</option>
+                <option value="admin">Administrador</option>
+            </select>
+        </div>
+        
+        <button type="submit" id="submitBtn" disabled><i class="fa-solid fa-paper-plane"></i> Guardar Usuario</button>
         <a href="index.php" class="btn-cancelar">Volver a la lista</a>
     </form>
 </div>
@@ -114,23 +161,25 @@ if (isset($_SESSION['mensaje'])) {
 // --- SCRIPT DE VALIDACIÓN DEL FORMULARIO ---
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('registroForm');
-    const nombreInput = document.getElementById('nombre');
+    const firstNameInput = document.getElementById('first_name');
     const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
     const submitBtn = document.getElementById('submitBtn');
-    const errorNombre = document.getElementById('error-nombre');
+    const errorFirstName = document.getElementById('error-first_name');
     const errorEmail = document.getElementById('error-email');
+    const errorPassword = document.getElementById('error-password');
 
-    const nombrePattern = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{2,}$/;
+    const namePattern = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{2,}$/;
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    function validateField(input, pattern, errorElement, emptyMsg, invalidMsg) {
+    function validateField(input, pattern, errorElement, emptyMsg, invalidMsg, required = true) {
         const value = input.value.trim();
-        if (value === '') {
+        if (required && value === '') {
             input.classList.add('invalid');
             errorElement.textContent = emptyMsg;
             errorElement.style.display = 'block';
             return false;
-        } else if (!pattern.test(value)) {
+        } else if (value !== '' && !pattern.test(value)) {
             input.classList.add('invalid');
             errorElement.textContent = invalidMsg;
             errorElement.style.display = 'block';
@@ -142,15 +191,36 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    function validatePassword() {
+        const value = passwordInput.value;
+        if (value === '') {
+            passwordInput.classList.add('invalid');
+            errorPassword.textContent = 'La contraseña es obligatoria.';
+            errorPassword.style.display = 'block';
+            return false;
+        } else if (value.length < 6) {
+            passwordInput.classList.add('invalid');
+            errorPassword.textContent = 'La contraseña debe tener al menos 6 caracteres.';
+            errorPassword.style.display = 'block';
+            return false;
+        } else {
+            passwordInput.classList.remove('invalid');
+            errorPassword.style.display = 'none';
+            return true;
+        }
+    }
+
     function validateForm() {
-        const isNombreValid = validateField(nombreInput, nombrePattern, errorNombre, 'El nombre es obligatorio.', 'El nombre solo debe contener letras y espacios.');
+        const isFirstNameValid = validateField(firstNameInput, namePattern, errorFirstName, 'El nombre es obligatorio.', 'El nombre solo debe contener letras y espacios.');
         const isEmailValid = validateField(emailInput, emailPattern, errorEmail, 'El email es obligatorio.', 'Por favor, introduce un email válido.');
-        submitBtn.disabled = !(isNombreValid && isEmailValid);
+        const isPasswordValid = validatePassword();
+        submitBtn.disabled = !(isFirstNameValid && isEmailValid && isPasswordValid);
     }
 
     ['input', 'blur'].forEach(event => {
-        nombreInput.addEventListener(event, validateForm);
+        firstNameInput.addEventListener(event, validateForm);
         emailInput.addEventListener(event, validateForm);
+        passwordInput.addEventListener(event, validateForm);
     });
 
     validateForm();

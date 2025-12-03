@@ -16,8 +16,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     try {
         $conn = conectar_db();
         
-        // Preparar la consulta para borrado lógico
-        $stmt = $conn->prepare("UPDATE usuarios SET estado = 0 WHERE id = ?");
+        // Preparar la consulta para borrado lógico (soft delete)
+        $stmt = $conn->prepare("UPDATE users SET deleted_at = NOW() WHERE id = ? AND deleted_at IS NULL");
         $stmt->bind_param("i", $id);
 
         if ($stmt->execute()) {

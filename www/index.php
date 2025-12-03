@@ -6,7 +6,7 @@ $conn = conectar_db();
 
 // --- LÓGICA PARA LEER (READ) ---
 try {
-    $resultado = $conn->query("SELECT id, nombre, email, fecha_registro, COALESCE(estado, 1) as estado FROM usuarios ORDER BY id DESC");
+    $resultado = $conn->query("SELECT id, uuid, email, username, first_name, last_name, role, status, created_at FROM users WHERE deleted_at IS NULL ORDER BY id DESC");
     $usuarios = $resultado->fetch_all(MYSQLI_ASSOC);
     $conn->close();
 } catch (mysqli_sql_exception $e) {
@@ -45,7 +45,9 @@ if (isset($_SESSION['mensaje'])) {
             <tr>
                 <th>ID</th>
                 <th>Nombre</th>
+                <th>Username</th>
                 <th>Email</th>
+                <th>Rol</th>
                 <th>Estado</th>
                 <th>Fecha Creación</th>
                 <th>Acciones</th>
@@ -54,29 +56,33 @@ if (isset($_SESSION['mensaje'])) {
         <tbody>
             <?php if (empty($usuarios)): ?>
                 <tr>
-                    <td colspan="6" class="no-usuarios">Aún no hay usuarios registrados.</td>
+                    <td colspan="8" class="no-usuarios">Aún no hay usuarios registrados.</td>
                 </tr>
             <?php else: ?>
                 <?php foreach ($usuarios as $usuario): ?>
                 <tr>
                     <td><?php echo htmlspecialchars($usuario['id']); ?></td>
-                    <td><?php echo htmlspecialchars($usuario['nombre']); ?></td>
+                    <td><?php echo htmlspecialchars(trim(($usuario['first_name'] ?? '') . ' ' . ($usuario['last_name'] ?? ''))); ?></td>
+                    <td><?php echo htmlspecialchars($usuario['username'] ?? '-'); ?></td>
                     <td><?php echo htmlspecialchars($usuario['email']); ?></td>
+                    <td><span class="badge badge-<?php echo $usuario['role']; ?>"><?php echo ucfirst($usuario['role']); ?></span></td>
                     <td>
-                        <?php if ($usuario['estado'] == 1): ?>
+                        <?php if ($usuario['status'] == 'active'): ?>
                             <span style="color: green;">✅ Activo</span>
+                        <?php elseif ($usuario['status'] == 'inactive'): ?>
+                            <span style="color: orange;">⏸️ Inactivo</span>
                         <?php else: ?>
-                            <span style="color: red;">❌ Inactivo</span>
+                            <span style="color: red;">🚫 Baneado</span>
                         <?php endif; ?>
                     </td>
-                    <td><?php echo htmlspecialchars(date("d/m/Y", strtotime($usuario['fecha_registro']))); ?></td>
+                    <td><?php echo htmlspecialchars(date("d/m/Y", strtotime($usuario['created_at']))); ?></td>
                     <td class="acciones">
                         <form action="editar.php" method="POST" style="display:inline;">
                             <input type="hidden" name="id" value="<?php echo $usuario['id']; ?>">
                             <button type="submit" class="btn-editar"><i class="fa-solid fa-pencil"></i></button>
                         </form>
 
-                        <?php if ($usuario['estado'] == 1): ?>
+                        <?php if ($usuario['status'] != 'banned'): ?>
                             <form action="eliminar.php" method="POST" style="display:inline;" onsubmit="return confirm('¿Estás seguro de que quieres eliminar a este usuario?');">
                                 <input type="hidden" name="id" value="<?php echo $usuario['id']; ?>">
                                 <button type="submit" class="btn-eliminar"><i class="fa-solid fa-trash"></i></button>
@@ -89,6 +95,19 @@ if (isset($_SESSION['mensaje'])) {
         </tbody>
     </table>
 </div>
+
+<style>
+.badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+.badge-user { background-color: #e3f2fd; color: #1976d2; }
+.badge-moderator { background-color: #fff3e0; color: #f57c00; }
+.badge-admin { background-color: #ffebee; color: #d32f2f; }
+</style>
 
 <?php include 'footer.php'; ?>
 
@@ -123,8 +142,8 @@ $(document).ready(function() {
             }
         ],
         "columnDefs": [
-            { "orderable": false, "targets": 5 },
-            { "searchable": false, "targets": 5 }
+            { "orderable": false, "targets": 7 },
+            { "searchable": false, "targets": 7 }
         ],
         "order": [[ 0, "desc" ]]
     });

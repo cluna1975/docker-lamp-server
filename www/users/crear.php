@@ -1,9 +1,11 @@
 <?php
 session_start();
 require_once '../config.php';
-require_once '../includes/auth_check.php';
+// require_once '../includes/auth_check.php'; // Permitir registro público
 
 $mensaje_info = null;
+$is_logged_in = isset($_SESSION['user_id']);
+$is_admin = ($is_logged_in && isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin');
 
 // --- LÓGICA PARA CREAR (CREATE) ---
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -14,7 +16,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = trim($_POST['username']);
     $email = trim($_POST['email']);
     $password = trim($_POST['password']);
-    $role = $_POST['role'] ?? 'user';
+    
+    // Solo permitir cambiar rol si es admin, sino forzar 'user'
+    if ($is_admin) {
+        $role = $_POST['role'] ?? 'user';
+    } else {
+        $role = 'user';
+    }
+
     $errors = [];
 
     // Validaciones
@@ -39,7 +48,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             if ($stmt->execute()) {
                 $_SESSION['mensaje'] = ['tipo' => 'success', 'texto' => "✅ ¡Usuario $first_name registrado con éxito!"];
-                header("Location: index.php");
+                
+                // Si no estaba logueado, redirigir al login
+                if (!$is_logged_in) {
+                    header("Location: ../auth/login.php");
+                } else {
+                    header("Location: index.php");
+                }
                 exit();
             } else {
                 if ($conn->errno == 1062) {
@@ -66,26 +81,7 @@ if (isset($_SESSION['mensaje'])) {
 }
 ?>
 <?php $page_title = 'Crear Usuario'; include '../header.php'; ?>
-    <style>
-        .content { display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 100px); }
-        .container { background: white; padding: 30px 40px; border-radius: 10px; width: 100%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin: 20px auto; }
-        h2 { margin-bottom: 25px; color: #333; text-align: center; }
-        .form-control { margin-bottom: 20px; text-align: left; }
-        .input-group { position: relative; }
-        .input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #aaa; }
-        .input-group input:focus + i { color: #007bff; }
-        label { display: block; margin-bottom: 8px; color: #555; font-weight: bold; }
-        input { width: 100%; padding: 12px 12px 12px 45px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 5px; }
-        input:focus { border-color: #007bff; outline: none; }
-        input.invalid { border-color: #dc3545 !important; }
-        .error-text { color: #dc3545; font-size: 0.875em; display: none; margin-top: 5px; height: 1em; }
-        button { width: 100%; padding: 12px; background: #007bff; color: white; border: none; cursor: pointer; border-radius: 5px; font-size: 16px; font-weight: bold; margin-top: 10px; }
-        button:disabled { background: #a0cffa; cursor: not-allowed; }
-        button i { margin-right: 8px; }
-        .msg { padding: 15px; margin-bottom: 20px; border-radius: 5px; text-align: center; font-weight: bold; }
-        .msg-error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        a.btn-cancelar { display: block; text-align: center; margin-top: 15px; color: #6c757d; text-decoration: none; }
-    </style>
+
 </head>
 <body>
 
@@ -142,6 +138,7 @@ if (isset($_SESSION['mensaje'])) {
             <span class="error-text" id="error-password"></span>
         </div>
         
+        <?php if ($is_admin): ?>
         <div class="form-control">
             <label for="role">Rol:</label>
             <select id="role" name="role" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px;">
@@ -150,6 +147,7 @@ if (isset($_SESSION['mensaje'])) {
                 <option value="admin">Administrador</option>
             </select>
         </div>
+        <?php endif; ?>
         
         <button type="submit" id="submitBtn" disabled><i class="fa-solid fa-paper-plane"></i> Guardar Usuario</button>
         <a href="index.php" class="btn-cancelar">Volver a la lista</a>

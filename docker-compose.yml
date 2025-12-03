@@ -30,20 +30,20 @@ services:
     networks:
       - lamp-network
 
-  # --- GESTOR VISUAL (phpMyAdmin) ---
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: mi_phpmyadmin
-    environment:
-      PMA_HOST: db
-      PMA_USER: root
-      PMA_PASSWORD: root
-    ports:
-      - "8081:80"
-    depends_on:
-      - db
-    networks:
-      - lamp-network
+  # --- GESTOR VISUAL (phpMyAdmin) - DESACTIVADO ---
+  # phpmyadmin:
+  #   image: phpmyadmin/phpmyadmin
+  #   container_name: mi_phpmyadmin
+  #   environment:
+  #     PMA_HOST: db
+  #     PMA_USER: root
+  #     PMA_PASSWORD: root
+  #   ports:
+  #     - "8081:80"
+  #   depends_on:
+  #     - db
+  #   networks:
+  #     - lamp-network
 
 # Definición de volúmenes y redes
 volumes:

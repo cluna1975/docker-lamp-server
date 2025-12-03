@@ -7,6 +7,9 @@ Web: http://localhost:8080
 
 Base de Datos: http://localhost:8081
 
+Node
+http://localhost:5000
+
 
 docker compose stop
 docker compose start

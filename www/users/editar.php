@@ -1,6 +1,7 @@
 <?php
 session_start();
-require_once 'config.php';
+require_once '../config.php';
+require_once '../includes/auth_check.php';
 
 $conn = conectar_db();
 $mensaje_info = null;
@@ -16,25 +17,29 @@ if (!$id) {
 // --- LÓGICA PARA ACTUALIZAR (UPDATE) ---
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['action'] == 'actualizar') {
     
-    $nombre = trim($_POST['nombre']);
-    $email  = trim($_POST['email']);
+    $first_name = trim($_POST['first_name']);
+    $last_name = trim($_POST['last_name']);
+    $username = trim($_POST['username']);
+    $email = trim($_POST['email']);
+    $role = $_POST['role'];
+    $status = $_POST['status'];
     $id = $_POST['id'];
     $errors = [];
 
-    // Validaciones (similares a la creación)
-    if (empty($nombre)) $errors[] = "El nombre es obligatorio.";
-    if (!preg_match("/^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$/", $nombre)) $errors[] = "El nombre solo puede contener letras y espacios.";
+    // Validaciones
+    if (empty($first_name)) $errors[] = "El nombre es obligatorio.";
+    if (!preg_match("/^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$/", $first_name)) $errors[] = "El nombre solo puede contener letras y espacios.";
     if (empty($email)) $errors[] = "El email es obligatorio.";
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = "El formato del email no es válido.";
+    if (!empty($username) && !preg_match("/^[a-zA-Z0-9_]+$/", $username)) $errors[] = "El username solo puede contener letras, números y guiones bajos.";
     
     if (!empty($errors)) {
         // Si hay errores, se mostrarán en la misma página de edición
         $mensaje_info = ['tipo' => 'error', 'texto' => implode('<br>', $errors)];
     } else {
         try {
-            $estado = (isset($_POST['estado']) && $_POST['estado'] == '1') ? 1 : 0;
-            $stmt = $conn->prepare("UPDATE usuarios SET nombre = ?, email = ?, estado = ? WHERE id = ?");
-            $stmt->bind_param("ssii", $nombre, $email, $estado, $id);
+            $stmt = $conn->prepare("UPDATE users SET first_name = ?, last_name = ?, username = ?, email = ?, role = ?, status = ? WHERE id = ?");
+            $stmt->bind_param("ssssssi", $first_name, $last_name, $username, $email, $role, $status, $id);
 
             if ($stmt->execute()) {
                 $_SESSION['mensaje'] = ['tipo' => 'success', 'texto' => "✅ ¡Usuario actualizado con éxito!"];
@@ -42,7 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['a
                 exit();
             } else {
                 if ($conn->errno == 1062) {
-                    $mensaje_info = ['tipo' => 'error', 'texto' => "❌ El email '$email' ya está en uso por otro usuario."];
+                    $mensaje_info = ['tipo' => 'error', 'texto' => "❌ El email o username ya está en uso por otro usuario."];
                 } else {
                     $mensaje_info = ['tipo' => 'error', 'texto' => "❌ Error del servidor: " . $stmt->error];
                 }
@@ -60,7 +65,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['a
 // --- LÓGICA PARA OBTENER DATOS DEL USUARIO (PARA EL FORMULARIO) ---
 if ($id) {
     try {
-        $stmt = $conn->prepare("SELECT id, nombre, email, COALESCE(estado, 1) as estado FROM usuarios WHERE id = ?");
+        $stmt = $conn->prepare("SELECT id, uuid, email, username, first_name, last_name, role, status FROM users WHERE id = ?");
         $stmt->bind_param("i", $id);
         $stmt->execute();
         $resultado = $stmt->get_result();
@@ -83,7 +88,7 @@ if ($id) {
 $conn->close();
 
 ?>
-<?php $page_title = 'Editar Usuario'; include 'header.php'; ?>
+<?php $page_title = 'Editar Usuario'; include '../header.php'; ?>
     <style>
         .content { display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 100px); }
         .container { background: white; padding: 30px 40px; border-radius: 10px; width: 100%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin: 20px auto; }
@@ -125,10 +130,26 @@ $conn->close();
         <input type="hidden" name="id" value="<?php echo htmlspecialchars($usuario['id']); ?>">
 
         <div class="form-control">
-            <label for="nombre">Nombre:</label>
+            <label for="first_name">Nombre:</label>
             <div class="input-group">
-                <input type="text" id="nombre" name="nombre" value="<?php echo htmlspecialchars($usuario['nombre']); ?>" required>
+                <input type="text" id="first_name" name="first_name" value="<?php echo htmlspecialchars($usuario['first_name']); ?>" required>
                 <i class="fa-solid fa-user"></i>
+            </div>
+        </div>
+        
+        <div class="form-control">
+            <label for="last_name">Apellido:</label>
+            <div class="input-group">
+                <input type="text" id="last_name" name="last_name" value="<?php echo htmlspecialchars($usuario['last_name'] ?? ''); ?>">
+                <i class="fa-solid fa-user"></i>
+            </div>
+        </div>
+        
+        <div class="form-control">
+            <label for="username">Username:</label>
+            <div class="input-group">
+                <input type="text" id="username" name="username" value="<?php echo htmlspecialchars($usuario['username'] ?? ''); ?>">
+                <i class="fa-solid fa-at"></i>
             </div>
         </div>
         
@@ -141,13 +162,21 @@ $conn->close();
         </div>
         
         <div class="form-control">
-            <label for="estado">Estado:</label>
-            <input type="hidden" name="estado" value="0">
-            <label class="switch">
-                <input type="checkbox" id="estado" name="estado" value="1" <?php echo $usuario['estado'] == 1 ? 'checked' : ''; ?>>
-                <span class="slider"></span>
-            </label>
-            <span class="estado-text"><?php echo $usuario['estado'] == 1 ? 'Activo' : 'Inactivo'; ?></span>
+            <label for="role">Rol:</label>
+            <select id="role" name="role" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px;">
+                <option value="user" <?php echo $usuario['role'] == 'user' ? 'selected' : ''; ?>>Usuario</option>
+                <option value="moderator" <?php echo $usuario['role'] == 'moderator' ? 'selected' : ''; ?>>Moderador</option>
+                <option value="admin" <?php echo $usuario['role'] == 'admin' ? 'selected' : ''; ?>>Administrador</option>
+            </select>
+        </div>
+        
+        <div class="form-control">
+            <label for="status">Estado:</label>
+            <select id="status" name="status" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px;">
+                <option value="active" <?php echo $usuario['status'] == 'active' ? 'selected' : ''; ?>>Activo</option>
+                <option value="inactive" <?php echo $usuario['status'] == 'inactive' ? 'selected' : ''; ?>>Inactivo</option>
+                <option value="banned" <?php echo $usuario['status'] == 'banned' ? 'selected' : ''; ?>>Baneado</option>
+            </select>
         </div>
         
         <button type="submit" id="submitBtn"><i class="fa-solid fa-save"></i> Guardar Cambios</button>
@@ -156,10 +185,5 @@ $conn->close();
     <?php endif; ?>
 </div>
 
-<script>
-document.getElementById('estado').addEventListener('change', function() {
-    const estadoText = document.querySelector('.estado-text');
-    estadoText.textContent = this.checked ? 'Activo' : 'Inactivo';
-});
-</script>
-<?php include 'footer.php'; ?>
+
+<?php include '../footer.php'; ?>

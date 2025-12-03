@@ -43,86 +43,72 @@ if (isset($_SESSION['mensaje'])) {
         <div class="msg msg-<?php echo htmlspecialchars($mensaje_info['tipo']); ?>"><?php echo $mensaje_info['texto']; ?></div>
     <?php endif; ?>
 
-    <table id="usuariosTable" class="display" style="width:100%">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Rol</th>
-                <th>Estado</th>
-                <th>Fecha Creación</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if (empty($usuarios)): ?>
+    <div class="table-responsive">
+        <table id="usuariosTable" class="display" style="width:100%">
+            <thead>
                 <tr>
-                    <td colspan="8" class="no-usuarios">Aún no hay usuarios registrados.</td>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                    <th>Fecha Creación</th>
+                    <th>Acciones</th>
                 </tr>
-            <?php else: ?>
-                <?php foreach ($usuarios as $usuario): ?>
-                <tr>
-                    <td><?php echo htmlspecialchars($usuario['id']); ?></td>
-                    <td><?php echo htmlspecialchars(trim(($usuario['first_name'] ?? '') . ' ' . ($usuario['last_name'] ?? ''))); ?></td>
-                    <td><?php echo htmlspecialchars($usuario['username'] ?? '-'); ?></td>
-                    <td><?php echo htmlspecialchars($usuario['email']); ?></td>
-                    <td><span class="badge badge-<?php echo $usuario['role']; ?>"><?php echo ucfirst($usuario['role']); ?></span></td>
-                    <td>
-                        <?php if ($usuario['status'] == 'active'): ?>
-                            <span style="color: green;">✅ Activo</span>
-                        <?php elseif ($usuario['status'] == 'inactive'): ?>
-                            <span style="color: orange;">⏸️ Inactivo</span>
-                        <?php else: ?>
-                            <span style="color: red;">🚫 Baneado</span>
-                        <?php endif; ?>
-                    </td>
-                    <td><?php echo htmlspecialchars(date("d/m/Y", strtotime($usuario['created_at']))); ?></td>
-                    <td class="acciones">
-                        <form action="editar.php" method="POST" style="display:inline;">
-                            <input type="hidden" name="id" value="<?php echo $usuario['id']; ?>">
-                            <button type="submit" class="btn-editar"><i class="fa-solid fa-pencil"></i></button>
-                        </form>
-
-                        <?php if ($usuario['status'] == 'active'): ?>
-                            <form action="eliminar.php" method="POST" style="display:inline;" onsubmit="return confirm('¿Estás seguro de que quieres desactivar a este usuario?');">
+            </thead>
+            <tbody>
+                <?php if (empty($usuarios)): ?>
+                    <tr>
+                        <td colspan="8" class="no-usuarios">Aún no hay usuarios registrados.</td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($usuarios as $usuario): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($usuario['id']); ?></td>
+                        <td><?php echo htmlspecialchars(trim(($usuario['first_name'] ?? '') . ' ' . ($usuario['last_name'] ?? ''))); ?></td>
+                        <td><?php echo htmlspecialchars($usuario['username'] ?? '-'); ?></td>
+                        <td><?php echo htmlspecialchars($usuario['email']); ?></td>
+                        <td><span class="badge badge-<?php echo $usuario['role']; ?>"><?php echo ucfirst($usuario['role']); ?></span></td>
+                        <td>
+                            <?php if ($usuario['status'] == 'active'): ?>
+                                <span style="color: green;">✅ Activo</span>
+                            <?php elseif ($usuario['status'] == 'inactive'): ?>
+                                <span style="color: orange;">⏸️ Inactivo</span>
+                            <?php else: ?>
+                                <span style="color: red;">🚫 Baneado</span>
+                            <?php endif; ?>
+                        </td>
+                        <td><?php echo htmlspecialchars(date("d/m/Y", strtotime($usuario['created_at']))); ?></td>
+                        <td class="acciones">
+                            <form action="editar.php" method="POST" style="display:inline;">
                                 <input type="hidden" name="id" value="<?php echo $usuario['id']; ?>">
-                                <button type="submit" class="btn-eliminar" title="Desactivar"><i class="fa-solid fa-user-slash"></i></button>
+                                <button type="submit" class="btn-editar"><i class="fa-solid fa-pencil"></i></button>
                             </form>
-                        <?php endif; ?>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-            <?php endif; ?>
-        </tbody>
-    </table>
+    
+                            <?php if ($usuario['status'] == 'active'): ?>
+                                <form action="eliminar.php" method="POST" style="display:inline;" onsubmit="return confirm('¿Estás seguro de que quieres desactivar a este usuario?');">
+                                    <input type="hidden" name="id" value="<?php echo $usuario['id']; ?>">
+                                    <button type="submit" class="btn-eliminar" title="Desactivar"><i class="fa-solid fa-user-slash"></i></button>
+                                </form>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
 </div>
 
-<style>
-.badge {
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 0.8em;
-    font-weight: bold;
-    text-transform: uppercase;
-}
-.badge-user { background-color: #e3f2fd; color: #1976d2; }
-.badge-moderator { background-color: #fff3e0; color: #f57c00; }
-.badge-admin { background-color: #ffebee; color: #d32f2f; }
-</style>
+
 
 <?php include '../footer.php'; ?>
 
 <script>
 $(document).ready(function() {
     var table = $('#usuariosTable').DataTable({
-        "responsive": {
-            "details": {
-                "type": 'column',
-                "target": 'tr'
-            }
-        },
+        "responsive": true,
         "pageLength": 10,
         "lengthMenu": [5, 10, 25, 50],
         "language": {
@@ -151,11 +137,12 @@ $(document).ready(function() {
         ],
         "order": [[ 0, "desc" ]],
         "columnDefs": [
-            { "responsivePriority": 1, "targets": [0, 1, 7] },
-            { "responsivePriority": 2, "targets": [3, 5] },
-            { "responsivePriority": 3, "targets": [2, 4, 6] }
+            { "responsivePriority": 1, "targets": [0, 1, 7] }, // ID, Nombre, Acciones siempre visibles si es posible
+            { "responsivePriority": 2, "targets": [5] },       // Estado
+            { "responsivePriority": 1000, "targets": [2, 4, 6] } // Username, Rol, Fecha se ocultan primero
         ]
     });
 });
+
 
 </script>

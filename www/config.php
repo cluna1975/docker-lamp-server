@@ -7,10 +7,11 @@
  */
 function conectar_db() {
     // --- CONFIGURACIÓN DE BASE DE DATOS ---
-    $host = $_ENV['DB_HOST'] ?? 'db';
-    $user = $_ENV['DB_USER'] ?? 'root';
-    $pass = $_ENV['DB_PASS'] ?? 'root';
-    $db   = $_ENV['DB_NAME'] ?? 'mi_proyecto';
+    // --- CONFIGURACIÓN DE BASE DE DATOS ---
+    $host = getenv('DB_HOST') ?: ($_ENV['DB_HOST'] ?? 'db');
+    $user = getenv('DB_USER') ?: ($_ENV['DB_USER'] ?? 'usuario_lamp');
+    $pass = getenv('DB_PASS') ?: ($_ENV['DB_PASS'] ?? 'user_secure_password');
+    $db   = getenv('DB_NAME') ?: ($_ENV['DB_NAME'] ?? 'mi_proyecto');
 
     try {
         mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);

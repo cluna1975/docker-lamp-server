@@ -59,14 +59,37 @@
         .no-usuarios { text-align: center; color: #777; padding: 20px; }
         
         /* Responsivo */
-        @media (max-width: 768px) {
+        @media (max-width: 480px) {
+            .container { padding: 10px; margin: 5px; }
+            .header { flex-direction: column; gap: 10px; text-align: center; }
+            .header-right { flex-direction: column; gap: 8px; width: 100%; }
+            .header-right span { order: 1; }
+            .header-right a { order: 2; width: 100%; text-align: center; }
+            table { font-size: 12px; }
+            th, td { padding: 6px 3px; }
+            th:nth-child(3), td:nth-child(3) { display: none; } /* Ocultar Username */
+            th:nth-child(5), td:nth-child(5) { display: none; } /* Ocultar Rol */
+            th:nth-child(7), td:nth-child(7) { display: none; } /* Ocultar Fecha */
+            .acciones { white-space: nowrap; }
+            .acciones button { padding: 4px 6px; font-size: 10px; margin: 1px; }
+            .badge { font-size: 0.7em; padding: 2px 6px; }
+        }
+        
+        @media (max-width: 768px) and (min-width: 481px) {
             .container { padding: 15px; margin: 10px; }
             .header { flex-direction: column; gap: 15px; text-align: center; }
+            .header-right { flex-wrap: wrap; justify-content: center; }
             table { font-size: 14px; }
             th, td { padding: 8px 5px; }
+            th:nth-child(7), td:nth-child(7) { display: none; } /* Ocultar Fecha */
             .acciones form { margin: 2px 0; }
             .acciones button { padding: 4px 6px; font-size: 12px; }
-            th:nth-child(4), td:nth-child(4) { display: none; } /* Ocultar fecha en móvil */
+        }
+        
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .container { padding: 20px; }
+            table { font-size: 15px; }
+            th, td { padding: 10px 8px; }
         }
         
         @media (min-width: 1200px) {
@@ -77,6 +100,25 @@
             display: flex;
             gap: 10px;
             align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-logout {
+            padding: 8px 12px;
+            background: #dc3545;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-logout:hover {
+            background: #c82333;
+        }
+        
+        .btn-logout i {
+            margin-right: 5px;
         }
         .dt-buttons .btn-export {
             padding: 10px 15px;
@@ -97,6 +139,28 @@
         }
         .dt-buttons {
             margin-bottom: 15px;
+        }
+        
+        /* DataTables responsive */
+        @media (max-width: 768px) {
+            .dt-buttons {
+                text-align: center;
+            }
+            .dt-buttons .btn-export {
+                padding: 8px 12px;
+                font-size: 12px;
+                margin: 2px;
+            }
+            .dataTables_wrapper .dataTables_length,
+            .dataTables_wrapper .dataTables_filter {
+                text-align: center;
+                margin-bottom: 10px;
+            }
+            .dataTables_wrapper .dataTables_info,
+            .dataTables_wrapper .dataTables_paginate {
+                text-align: center;
+                margin-top: 10px;
+            }
         }
 
         /* Estilos para el nuevo footer */

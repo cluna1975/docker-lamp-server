@@ -1,6 +1,7 @@
 <?php
 session_start();
-require_once 'config.php';
+require_once '../config.php';
+require_once '../includes/auth_check.php';
 
 $mensaje_info = null;
 
@@ -64,7 +65,7 @@ if (isset($_SESSION['mensaje'])) {
     unset($_SESSION['mensaje']);
 }
 ?>
-<?php $page_title = 'Crear Usuario'; include 'header.php'; ?>
+<?php $page_title = 'Crear Usuario'; include '../header.php'; ?>
     <style>
         .content { display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 100px); }
         .container { background: white; padding: 30px 40px; border-radius: 10px; width: 100%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin: 20px auto; }
@@ -155,7 +156,7 @@ if (isset($_SESSION['mensaje'])) {
     </form>
 </div>
 
-<?php include 'footer.php'; ?>
+<?php include '../footer.php'; ?>
 
 <script>
 // --- SCRIPT DE VALIDACIÓN DEL FORMULARIO ---

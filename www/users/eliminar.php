@@ -1,6 +1,7 @@
 <?php
 session_start();
-require_once 'config.php';
+require_once '../config.php';
+require_once '../includes/auth_check.php';
 
 // Solo proceder si es una solicitud POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -16,19 +17,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     try {
         $conn = conectar_db();
         
-        // Preparar la consulta para borrado lógico (soft delete)
-        $stmt = $conn->prepare("UPDATE users SET deleted_at = NOW() WHERE id = ? AND deleted_at IS NULL");
+        // Preparar la consulta para cambiar status a inactive
+        $stmt = $conn->prepare("UPDATE users SET status = 'inactive' WHERE id = ? AND status != 'inactive'");
         $stmt->bind_param("i", $id);
 
         if ($stmt->execute()) {
             // Verificar si alguna fila fue afectada para confirmar la eliminación
             if ($stmt->affected_rows > 0) {
-                $_SESSION['mensaje'] = ['tipo' => 'success', 'texto' => '🗑️ Usuario eliminado correctamente.'];
+                $_SESSION['mensaje'] = ['tipo' => 'success', 'texto' => '⏸️ Usuario desactivado correctamente.'];
             } else {
-                $_SESSION['mensaje'] = ['tipo' => 'error', 'texto' => '❌ No se encontró el usuario a eliminar.'];
+                $_SESSION['mensaje'] = ['tipo' => 'error', 'texto' => '❌ No se encontró el usuario a desactivar.'];
             }
         } else {
-            $_SESSION['mensaje'] = ['tipo' => 'error', 'texto' => '❌ Error del servidor al intentar eliminar.'];
+            $_SESSION['mensaje'] = ['tipo' => 'error', 'texto' => '❌ Error del servidor al intentar desactivar.'];
             error_log("Error en eliminar.php: " . $stmt->error);
         }
         

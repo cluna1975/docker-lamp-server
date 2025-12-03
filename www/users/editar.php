@@ -1,6 +1,7 @@
 <?php
 session_start();
-require_once 'config.php';
+require_once '../config.php';
+require_once '../includes/auth_check.php';
 
 $conn = conectar_db();
 $mensaje_info = null;
@@ -37,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['a
         $mensaje_info = ['tipo' => 'error', 'texto' => implode('<br>', $errors)];
     } else {
         try {
-            $stmt = $conn->prepare("UPDATE users SET first_name = ?, last_name = ?, username = ?, email = ?, role = ?, status = ? WHERE id = ? AND deleted_at IS NULL");
+            $stmt = $conn->prepare("UPDATE users SET first_name = ?, last_name = ?, username = ?, email = ?, role = ?, status = ? WHERE id = ?");
             $stmt->bind_param("ssssssi", $first_name, $last_name, $username, $email, $role, $status, $id);
 
             if ($stmt->execute()) {
@@ -64,7 +65,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['a
 // --- LÓGICA PARA OBTENER DATOS DEL USUARIO (PARA EL FORMULARIO) ---
 if ($id) {
     try {
-        $stmt = $conn->prepare("SELECT id, uuid, email, username, first_name, last_name, role, status FROM users WHERE id = ? AND deleted_at IS NULL");
+        $stmt = $conn->prepare("SELECT id, uuid, email, username, first_name, last_name, role, status FROM users WHERE id = ?");
         $stmt->bind_param("i", $id);
         $stmt->execute();
         $resultado = $stmt->get_result();
@@ -87,7 +88,7 @@ if ($id) {
 $conn->close();
 
 ?>
-<?php $page_title = 'Editar Usuario'; include 'header.php'; ?>
+<?php $page_title = 'Editar Usuario'; include '../header.php'; ?>
     <style>
         .content { display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 100px); }
         .container { background: white; padding: 30px 40px; border-radius: 10px; width: 100%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin: 20px auto; }
@@ -185,4 +186,4 @@ $conn->close();
 </div>
 
 
-<?php include 'footer.php'; ?>
+<?php include '../footer.php'; ?>

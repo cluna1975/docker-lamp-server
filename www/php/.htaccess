@@ -1,0 +1,15 @@
+# Sistema de Facturación Electrónica - SRI Ecuador
+# Configuración Apache Simple
+
+# Configuración de tipos MIME
+AddType application/xml .xml
+AddType application/json .json
+
+# Configuración de charset
+AddDefaultCharset UTF-8
+
+# PHP settings
+php_value upload_max_filesize 10M
+php_value post_max_size 10M
+php_value max_execution_time 300
+php_value max_input_time 300

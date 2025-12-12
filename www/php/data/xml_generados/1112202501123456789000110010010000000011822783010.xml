@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<factura id="comprobante" version="1.1.0">
+  <infoTributaria>
+    <ambiente>1</ambiente>
+    <tipoEmision>1</tipoEmision>
+    <razonSocial>MI EMPRESA S.A.</razonSocial>
+    <nombreComercial>MI EMPRESA</nombreComercial>
+    <ruc>1234567890001</ruc>
+    <codDoc>01</codDoc>
+    <estab>001</estab>
+    <ptoEmi>001</ptoEmi>
+    <secuencial>000000001</secuencial>
+    <dirMatriz>Av. Principal 123</dirMatriz>
+    <claveAcceso>1112202501123456789000110010010000000011822783010</claveAcceso>
+  </infoTributaria>
+  <infoFactura>
+    <fechaEmision>2025-12-11</fechaEmision>
+    <dirEstablecimiento>Av. Principal 123</dirEstablecimiento>
+    <obligadoContabilidad>SI</obligadoContabilidad>
+    <tipoIdentificacionComprador>05</tipoIdentificacionComprador>
+    <razonSocialComprador>CLUNA</razonSocialComprador>
+    <identificacionComprador>0915931737</identificacionComprador>
+    <direccionComprador>VILLA DEL REY</direccionComprador>
+    <totalSinImpuestos>2.50</totalSinImpuestos>
+    <totalDescuento>0.00</totalDescuento>
+    <totalConImpuestos>
+      <totalImpuesto>
+        <codigo>2</codigo>
+        <codigoPorcentaje>2</codigoPorcentaje>
+        <baseImponible>2.50</baseImponible>
+        <valor>0.30</valor>
+      </totalImpuesto>
+      <totalImpuesto>
+        <codigo>2</codigo>
+        <codigoPorcentaje>0</codigoPorcentaje>
+        <baseImponible>0.00</baseImponible>
+        <valor>0.00</valor>
+      </totalImpuesto>
+    </totalConImpuestos>
+    <propina>0.00</propina>
+    <importeTotal>2.80</importeTotal>
+    <moneda>DOLAR</moneda>
+  </infoFactura>
+  <detalles>
+    <detalle>
+      <codigoPrincipal>DRDRED</codigoPrincipal>
+      <codigoAuxiliar/>
+      <descripcion>CUADERNO</descripcion>
+      <cantidad>1.00</cantidad>
+      <precioUnitario>2.500000</precioUnitario>
+      <descuento>0.00</descuento>
+      <precioTotalSinImpuesto>2.50</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>2</codigoPorcentaje>
+          <tarifa>12</tarifa>
+          <baseImponible>2.5</baseImponible>
+          <valor>0.3</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+  </detalles>
+</factura>

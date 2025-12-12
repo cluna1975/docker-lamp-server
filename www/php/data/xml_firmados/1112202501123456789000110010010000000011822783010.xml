@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<factura id="comprobante" version="1.1.0">
+  <infoTributaria>
+    <ambiente>1</ambiente>
+    <tipoEmision>1</tipoEmision>
+    <razonSocial>MI EMPRESA S.A.</razonSocial>
+    <nombreComercial>MI EMPRESA</nombreComercial>
+    <ruc>1234567890001</ruc>
+    <codDoc>01</codDoc>
+    <estab>001</estab>
+    <ptoEmi>001</ptoEmi>
+    <secuencial>000000001</secuencial>
+    <dirMatriz>Av. Principal 123</dirMatriz>
+    <claveAcceso>1112202501123456789000110010010000000011822783010</claveAcceso>
+  </infoTributaria>
+  <infoFactura>
+    <fechaEmision>2025-12-11</fechaEmision>
+    <dirEstablecimiento>Av. Principal 123</dirEstablecimiento>
+    <obligadoContabilidad>SI</obligadoContabilidad>
+    <tipoIdentificacionComprador>05</tipoIdentificacionComprador>
+    <razonSocialComprador>CLUNA</razonSocialComprador>
+    <identificacionComprador>0915931737</identificacionComprador>
+    <direccionComprador>VILLA DEL REY</direccionComprador>
+    <totalSinImpuestos>2.50</totalSinImpuestos>
+    <totalDescuento>0.00</totalDescuento>
+    <totalConImpuestos>
+      <totalImpuesto>
+        <codigo>2</codigo>
+        <codigoPorcentaje>2</codigoPorcentaje>
+        <baseImponible>2.50</baseImponible>
+        <valor>0.30</valor>
+      </totalImpuesto>
+      <totalImpuesto>
+        <codigo>2</codigo>
+        <codigoPorcentaje>0</codigoPorcentaje>
+        <baseImponible>0.00</baseImponible>
+        <valor>0.00</valor>
+      </totalImpuesto>
+    </totalConImpuestos>
+    <propina>0.00</propina>
+    <importeTotal>2.80</importeTotal>
+    <moneda>DOLAR</moneda>
+  </infoFactura>
+  <detalles>
+    <detalle>
+      <codigoPrincipal>DRDRED</codigoPrincipal>
+      <codigoAuxiliar/>
+      <descripcion>CUADERNO</descripcion>
+      <cantidad>1.00</cantidad>
+      <precioUnitario>2.500000</precioUnitario>
+      <descuento>0.00</descuento>
+      <precioTotalSinImpuesto>2.50</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>2</codigoPorcentaje>
+          <tarifa>12</tarifa>
+          <baseImponible>2.5</baseImponible>
+          <valor>0.3</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+  </detalles>
+<ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:etsi="http://uri.etsi.org/01903/v1.3.2#" Id="Signature1765510347"><ds:SignedInfo Id="Signature-SignedInfo1765510347"><ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/><ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><ds:Reference Id="SignedPropertiesID1765510347" Type="http://uri.etsi.org/01903#SignedProperties" URI="#comprobante"><ds:Transforms><ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/></ds:Transforms><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>fXnFQZnZ8xgPMiWMRZRuN9UuinE=</ds:DigestValue></ds:Reference></ds:SignedInfo><ds:SignatureValue Id="SignatureValue1765510347">AA1/mR5ruRg/Fa1pj4KLVrX3ZgVLrgzvgrhD8JmHGjHV69wmsjTq5WJeYEIJiAKhrwRMRuINmYry3e0r4Ne9WUyeO6yuI1IOxw9GZQAPKIqXzqYHHJ8AgUlQJiicplFFKiLLsBf3HA6czMkdJZ6uvyBB6hvYyxdA4H3YhSLcm2WPN/xvrGnICI+KW9KQ3KndObB+wpLgCHdYxpjVpZShL9hW0d3iK6a5r7oiaolG66Y1/rMmzVkKBxIqeUxjboRYP/BmpAphFbSeB8qgzPuF9vNMcm+vqK8EZE+KIoeRQQwOGEtWZ+15kYPgO0I16tZP47T7RosaU46fX/2MCnsEuw==</ds:SignatureValue><ds:KeyInfo Id="Certificate1765510347"><ds:X509Data><ds:X509Certificate>Bag Attributes    localKeyID: 14 85 A2 B5 17 D0 51 C9 B1 06 9A 6C 12 DB CD CA 8E 1C F6 69    friendlyName: MARIA DEL CARMEN RUGEL ARMENDARIZsubject=CN=MARIA DEL CARMEN RUGEL ARMENDARIZ, serialNumber=271223100651, OU=ENTIDAD DE CERTIFICACION DE INFORMACION, O=SECURITY DATA S.A. 2, C=ECissuer=C=EC, O=SECURITY DATA S.A. 2, OU=ENTIDAD DE CERTIFICACION DE INFORMACION, CN=AUTORIDAD DE CERTIFICACION SUBCA-2 SECURITY DATAMIIMDzCCCfegAwIBAgIELR5wcTANBgkqhkiG9w0BAQsFADCBmTELMAkGA1UEBhMCRUMxHTAbBgNVBAoMFFNFQ1VSSVRZIERBVEEgUy5BLiAyMTAwLgYDVQQLDCdFTlRJREFEIERFIENFUlRJRklDQUNJT04gREUgSU5GT1JNQUNJT04xOTA3BgNVBAMMMEFVVE9SSURBRCBERSBDRVJUSUZJQ0FDSU9OIFNVQkNBLTIgU0VDVVJJVFkgREFUQTAeFw0yMzEyMjcxNDU3MDdaFw0yNTEyMjYxNDU3MDdaMIGhMSowKAYDVQQDDCFNQVJJQSBERUwgQ0FSTUVOIFJVR0VMIEFSTUVOREFSSVoxFTATBgNVBAUTDDI3MTIyMzEwMDY1MTEwMC4GA1UECwwnRU5USURBRCBERSBDRVJUSUZJQ0FDSU9OIERFIElORk9STUFDSU9OMR0wGwYDVQQKDBRTRUNVUklUWSBEQVRBIFMuQS4gMjELMAkGA1UEBhMCRUMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCikl/EtTxGfXhU0gAZQ8MEOQLveGApMCFCrPqWiGVoFHaJKN16aWhTPc/F5EAi3AUIs0nK6jSrq++NBpjxgAYe0Qwf9JOsT9jjdqVSDS6RIlFzS9sVAqfaYD4l21P/ft8srCo4ca6N7lI+nB+JgIsJmNnulVkq8BhmXiZc3dJNopwTPGPP95VARQzLQYiymisCY6Qc+L5WlaKxwiQ38Ljh8Cy/P/jeaNKGWiQPE95j2OZP0PhhpVjk+sNBMEC5aTqcM2vwocmhVhflaaTvZXpS969Z92hGCCmVK/Hp6W5GD1jufYuX3GOEZpyiPdOoWWvJLkP6smiEe6wB8co7v9rxAgMBAAGjggdTMIIHTzAMBgNVHRMBAf8EAjAAMB8GA1UdIwQYMBaAFIy6yhFXeCWAHWsKS1W/ja5i3b2PMFkGCCsGAQUFBwEBBE0wSzBJBggrBgEFBQcwAYY9aHR0cDovL29jc3Bndy5zZWN1cml0eWRhdGEubmV0LmVjL2VqYmNhL3B1YmxpY3dlYi9zdGF0dXMvb2NzcDCBzwYDVR0uBIHHMIHEMIHBoIG+oIG7hoG4bGRhcDovL2xkYXBzZGNhMi5zZWN1cml0eWRhdGEubmV0LmVjL0NOPUFVVE9SSURBRCBERSBDRVJUSUZJQ0FDSU9OIFNVQkNBLTIgU0VDVVJJVFkgREFUQSxPVT1FTlRJREFEIERFIENFUlRJRklDQUNJT04gREUgSU5GT1JNQUNJT04sTz1TRUNVUklUWSBEQVRBIFMuQS4gMixDPUVDP2RlbHRhUmV2b2NhdGlvbkxpc3Q/YmFzZTArBgNVHREEJDAigSBtYXJpYWRlbGNhcm1lbl9ydWdlbEBob3RtYWlsLmNvbTCCARUGA1UdIASCAQwwggEIMGIGCisGAQQBgqZyAgkwVDBSBggrBgEFBQcCAjBGHkQAQwBlAHIAdABpAGYAaQBjAGEAZABvACAAZABlACAAUgBlAHAAcgBlAHMAZQBuAHQAYQBuAHQAZQAgAEwAZQBnAGEAbDCBoQYKKwYBBAGCpnICAzCBkjCBjwYIKwYBBQUHAgEWgYJodHRwczovL3d3dy5zZWN1cml0eWRhdGEubmV0LmVjL3dwLWNvbnRlbnQvZG93bmxvYWRzL05vcm1hdGl2YXMvUF9kZV9DZXJ0aWZpY2Fkb3MvUG9saXRpY2FzIGRlIENlcnRpZmljYWRvIFJlcHJlc2VudGFudGUgTGVnYWwucGRmMIICogYDVR0fBIICmTCCApUwgeWgQaA/hj1odHRwOi8vb2NzcGd3LnNlY3VyaXR5ZGF0YS5uZXQuZWMvZWpiY2EvcHVibGljd2ViL3N0YXR1cy9vY3NwooGfpIGcMIGZMTkwNwYDVQQDDDBBVVRPUklEQUQgREUgQ0VSVElGSUNBQ0lPTiBTVUJDQS0yIFNFQ1VSSVRZIERBVEExMDAuBgNVBAsMJ0VOVElEQUQgREUgQ0VSVElGSUNBQ0lPTiBERSBJTkZPUk1BQ0lPTjEdMBsGA1UECgwUU0VDVVJJVFkgREFUQSBTLkEuIDIxCzAJBgNVBAYTAkVDMIHHoIHEoIHBhoG+bGRhcDovL2xkYXBzZGNhMi5zZWN1cml0eWRhdGEubmV0LmVjL0NOPUFVVE9SSURBRCBERSBDRVJUSUZJQ0FDSU9OIFNVQkNBLTIgU0VDVVJJVFkgREFUQSxPVT1FTlRJREFEIERFIENFUlRJRklDQUNJT04gREUgSU5GT1JNQUNJT04sTz1TRUNVUklUWSBEQVRBIFMuQS4gMixDPUVDP2NlcnRpZmljYXRlUmV2b2NhdGlvbkxpc3Q/YmFzZTCB4KCB3aCB2oaB12h0dHBzOi8vcG9ydGFsLW9wZXJhZG9yMi5zZWN1cml0eWRhdGEubmV0LmVjL2VqYmNhL3B1YmxpY3dlYi93ZWJkaXN0L2NlcnRkaXN0P2NtZD1jcmwmaXNzdWVyPUNOPUFVVE9SSURBRCBERSBDRVJUSUZJQ0FDSU9OIFNVQkNBLTIgU0VDVVJJVFkgREFUQSxPVT1FTlRJREFEIERFIENFUlRJRklDQUNJT04gREUgSU5GT1JNQUNJT04sTz1TRUNVUklUWSBEQVRBIFMuQS4gMixDPUVDMB0GA1UdDgQWBBQUhaK1F9BRybEGmmwS283Kjhz2aTArBgNVHRAEJDAigA8yMDIzMTIyNzE0NTcwN1qBDzIwMjUxMjI2MTQ1NzA3WjALBgNVHQ8EBAMCBeAwHwYKKwYBBAGCpnIDBQQRDA9HRVJFTlRFIEdFTkVSQUwwGgYKKwYBBAGCpnIDAQQMDAowOTIwNjQ1OTgzMBkGCisGAQQBgqZyAwkECwwJR1VBWUFRVUlMMBEGCisGAQQBgqZyAyIEAwwBLjAtBgorBgEEAYKmcgMHBB8MHU5FUlkgQ0hBTEVOIFNPTEFSIDEgMiBZIEZJQ1VTMCAGCisGAQQBgqZyAwIEEgwQTUFSSUEgREVMIENBUk1FTjAfBgorBgEEAYKmcgMgBBEMDzAwMTAwMjAwMDUwMzIyNjATBgorBgEEAYKmcgMhBAUMA1BGWDAXBgorBgEEAYKmcgMMBAkMB0VDVUFET1IwFQYKKwYBBAGCpnIDAwQHDAVSVUdFTDAfBgorBgEEAYKmcgMKBBEMD0VDVUFOQVVUSUNBIFMgQTAdBgorBgEEAYKmcgMLBA8MDTA5OTIyMzY1MTUwMDEwEgYKKwYBBAGCpnIDHQQEDAJObzAaBgorBgEEAYKmcgMEBAwMCkFSTUVOREFSSVowGgYKKwYBBAGCpnIDCAQMDAowOTkxMTUzNjc1MA0GCSqGSIb3DQEBCwUAA4ICAQAo4AcPgxDysz8PtPRerIIlxnpQ57t/2zlHJ1KYJfwTAtiShGL3+y3/T5jdW6YClm9buJqTChqTL8yRQLFKLsRJNdvsWvtuXpOYMyucFEVvgQ16I6savJEHGT1OgWrj+N9M59pybeJaLyCOm60zaCsCxk/7BNTKX/2epRNlhvItLsFZ/p7IvnZX94L3VP9gW6zvqPEQe3nZZMP9pAFsa3Tz/uiBS4VMMcMhW8CSQLwfHPDv23VyXRakDczXs4UBDIEbsrU9zY7+YI2kE71j9uzTZylX1syv/dqvrx9BVg1gPI52Z20Q8Ccr1GxpbArV7WjNVqxZ2jbU7nyveuNw3DgVz6vVa0VnIT77evWY7ewzEFsShoe2Rqcaiu9WEOun82UzFGVBX+v57YUpretlFBXk6w53TwFGkyJleaU9fDxM7aWDY2t8S0+ZKdImd5EfEL2Av/NQ+DY+kThoXBGG1bL0cC6Ef9E0zHZ09lbxCnE+QzXBhW/05IkflAXhFXnZGsdrFzaUGZi/RabYwh+z3dafyaRYniefWOyK94To1tfZzfASj9D//YYvv+j1Lo/szYFM3uYLpGu62uclOG8xJrjoWlCt2yEO4uEj3SmlV8IN7qxeORz7P32olE620wHC6XszAmv4zkI7y296SgjAuCqnQrcW0MaeBBTJkUdD20CFiQ==</ds:X509Certificate></ds:X509Data></ds:KeyInfo><ds:Object Id="Signature-Object1765510347"><etsi:QualifyingProperties Target="#Signature1765510347"><etsi:SignedProperties Id="Signature-SignedProperties1765510347"><etsi:SignedSignatureProperties><etsi:SigningTime>2025-12-12T03:32:27Z</etsi:SigningTime><etsi:SigningCertificate><etsi:Cert><etsi:CertDigest><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>xz19G9vvPnhX2AFqcv3suVQXsoo=</ds:DigestValue></etsi:CertDigest><etsi:IssuerSerial><ds:X509IssuerName>AUTORIDAD DE CERTIFICACION SUBCA-2 SECURITY DATA</ds:X509IssuerName><ds:X509SerialNumber>756969585</ds:X509SerialNumber></etsi:IssuerSerial></etsi:Cert></etsi:SigningCertificate></etsi:SignedSignatureProperties></etsi:SignedProperties></etsi:QualifyingProperties></ds:Object></ds:Signature></factura>

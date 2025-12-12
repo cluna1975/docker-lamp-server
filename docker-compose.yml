@@ -8,7 +8,8 @@ services:
     volumes:
       - ./www:/var/www/html
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - lamp-network
     restart: unless-stopped
@@ -17,6 +18,12 @@ services:
       - DB_USER=${MYSQL_USER}
       - DB_PASS=${MYSQL_PASSWORD}
       - DB_NAME=${MYSQL_DATABASE}
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost/" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   # --- BASE DE DATOS (MySQL) ---
   db:
@@ -35,6 +42,11 @@ services:
       - db_data:/var/lib/mysql
     networks:
       - lamp-network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   # --- GESTOR VISUAL (phpMyAdmin) ---
   # phpmyadmin:
   #   image: phpmyadmin/phpmyadmin

@@ -1,0 +1,43 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Docker
+docker-compose.yml
+Dockerfile
+.dockerignore
+
+# Documentación
+*.md
+README.md
+DDL.md
+comandos.md
+
+# IDEs
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporales
+tmp/
+temp/
+*.tmp
+
+# Certificados sensibles (no incluir en imagen)
+*.p12
+*.pfx
+
+# Backups
+*.bak
+*.backup
